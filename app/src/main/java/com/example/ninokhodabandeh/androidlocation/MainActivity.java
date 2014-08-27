@@ -50,7 +50,7 @@ import javax.sql.ConnectionEvent;
 
 
 public class MainActivity extends FragmentActivity implements
-        LocationListener,
+        com.google.android.gms.location.LocationListener,
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener
 {
@@ -188,21 +188,6 @@ public class MainActivity extends FragmentActivity implements
         _textViewLatLng.setText(LocationUtils.getLatLong(this, location));
     }
 
-    @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String s) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String s) {
-
-    }
-
     // GooglePlayServicesClient.ConnectionCallbacks
     @Override
     public void onConnected(Bundle bundle) {
@@ -244,13 +229,22 @@ public class MainActivity extends FragmentActivity implements
     }
 
     private void startPeriodicUpdates(){
-        _locationClient.requestLocationUpdates(_locationRequest, (com.google.android.gms.location.LocationListener) this);
+        try{
+            _locationClient.requestLocationUpdates(_locationRequest, this);
+        }catch (Exception ex){
+            Log.e(LocationUtils.APPTAG ,ex.getMessage());
+        }
+
         _textViewConnectionState.setText(R.string.location_requested);
     }
 
     private void stopPeriodicUpdates(){
-        _locationClient.removeLocationUpdates((com.google.android.gms.location.LocationListener) this);
-        _textViewConnectionStatus.setText(R.string.location_updates_stopped);
+        try {
+            _locationClient.removeLocationUpdates(this);
+        }catch (Exception ex){
+            Log.e(LocationUtils.APPTAG ,ex.getMessage());
+        }
+            _textViewConnectionStatus.setText(R.string.location_updates_stopped);
     }
 
     public void getAddress(View v){
